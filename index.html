@@ -23,7 +23,21 @@
       var(--pink);
     padding:28px 16px 40px;
   }
-  main{max-width:440px;margin:0 auto}
+  /* רקע חגיגי לתקופת חנוכה, קבוע מאחורי הדף. מופעל מהסקריפט עד התאריך ב-BG_UNTIL */
+  .bg{position:fixed;inset:0;z-index:-1;display:none;background:url(bg_tall.jpg) center/cover no-repeat}
+  .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,214,224,.35),rgba(255,214,224,.15) 40%,rgba(255,214,224,.3))}
+  @media (min-width:700px){.bg{background-image:url(bg_wide.jpg)}}
+  body.holiday{background:transparent}
+  .group{display:none;margin:26px 0 0;padding:22px 18px 20px;border-radius:20px;background:rgba(255,255,255,.88);border:1.5px solid var(--gold);box-shadow:0 8px 24px rgba(90,52,24,.12)}
+  .group.on{display:block}
+  .group h2{font-weight:800;font-size:20px;margin-bottom:6px}
+  .group p{font-weight:500;font-size:15px;line-height:1.5;margin-bottom:14px}
+  .group .btn,body.holiday .group .btn{margin:0;background:var(--black);color:var(--white);box-shadow:0 3px 0 var(--gold)}
+  body.holiday .bg{display:block}
+  body.holiday .btn{background:rgba(255,255,255,.92)}
+  body.holiday .btn.hl{background:var(--black)}
+  body.holiday .tagline,body.holiday footer{text-shadow:0 1px 8px rgba(255,255,255,.9)}
+  main{max-width:440px;margin:0 auto;position:relative}
   .logo{width:230px;max-width:70%;height:auto;display:block;margin:0 auto 14px}
   .tagline{font-weight:700;font-size:17px;margin-bottom:26px}
   .sec{display:flex;align-items:center;gap:12px;font-weight:800;font-size:15px;color:#7a5f12;margin:22px 4px 10px}
@@ -41,10 +55,16 @@
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"></div>
 <main>
   <img class="logo" src="logo.png" alt="Shir's Boutique קונדיטוריה בוטיק">
   <p class="tagline">מושב מזור | כשר למהדרין, חלבי</p>
   <div id="links"></div>
+  <section class="group" id="group">
+    <h2>קבוצת העדכונים השקטה שלנו</h2>
+    <p>רק אנחנו מפרסמים, בלי הודעות מיותרות.<br>כאן שומעים ראשונים על מבצעים ומועדי הזמנה.</p>
+    <a class="btn" id="group-btn" href="#">להצטרפות לקבוצה</a>
+  </section>
   <footer>Shir's Boutique</footer>
 </main>
 
@@ -60,12 +80,16 @@
     ]},
     { title: "כל השנה", links: [
       { text: "הזמנה מראש לנקודת איסוף בדוכן בשישי", url: "https://shirsbou-prog.github.io/sinabon-order/" },
-      { text: "קבוצת העדכונים השקטה שלנו", url: "" },
       { text: "יצירת קשר", sub: "וואטסאפ", url: WA + encodeURIComponent("היי שיר, הגעתי מהאינסטגרם ואשמח לפרטים 🌸") }
     ]}
   ];
 
+  var GROUP_URL = ""; // קישור לקבוצת הוואטסאפ. כל עוד ריק, החלונית מוסתרת
+  var BG_UNTIL ="2026-12-13T00:00:00+02:00"; // אחרי חנוכה חוזרים לרקע הוורוד הרגיל
+
   var now = new Date(), box = document.getElementById("links");
+  if (now < new Date(BG_UNTIL)) document.body.classList.add("holiday");
+  if (GROUP_URL) { document.getElementById("group-btn").href = GROUP_URL; document.getElementById("group").classList.add("on"); }
   SECTIONS.forEach(function (s) {
     var live = s.links.filter(function (l) { return l.url && (!l.until || now < new Date(l.until)); });
     if (!live.length) return;
